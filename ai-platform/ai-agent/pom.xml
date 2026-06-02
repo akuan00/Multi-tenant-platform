@@ -25,23 +25,19 @@
             <groupId>com.company</groupId>
             <artifactId>ai-prompt</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.company</groupId>
+            <artifactId>ai-llm</artifactId>
+        </dependency>
 
-        <!-- LangChain4j core -->
+        <!-- LangChain4j core + OpenAI -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j</artifactId>
         </dependency>
-
-        <!-- LangChain4j OpenAI -->
         <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-open-ai</artifactId>
-        </dependency>
-
-        <!-- LangChain4j chat memory -->
-        <dependency>
-            <groupId>dev.langchain4j</groupId>
-            <artifactId>langchain4j</artifactId>
         </dependency>
     </dependencies>
 </project>

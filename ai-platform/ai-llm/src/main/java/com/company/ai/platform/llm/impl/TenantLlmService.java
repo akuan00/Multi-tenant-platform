@@ -3,19 +3,21 @@ package com.company.ai.platform.llm.impl;
 import com.company.ai.common.core.exception.BizException;
 import com.company.ai.common.core.result.ResultCode;
 import com.company.ai.platform.llm.LlmService;
+import com.company.ai.platform.llm.factory.ChatModelFactory;
+import com.company.ai.platform.llm.factory.StreamingChatModelFactory;
 import com.company.ai.platform.llm.model.ChatRequest;
 import com.company.ai.platform.llm.model.ChatResponse;
 import com.company.ai.tenant.context.TenantContext;
 import com.company.ai.tenant.service.TenantConfigService;
+import dev.langchain4j.data.message.AiMessage;
+import dev.langchain4j.data.message.ChatMessage;
+import dev.langchain4j.data.message.SystemMessage;
+import dev.langchain4j.data.message.UserMessage;
+import dev.langchain4j.model.chat.ChatModel;
+import dev.langchain4j.model.chat.StreamingChatModel;
+import dev.langchain4j.model.chat.response.StreamingChatResponseHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -27,29 +29,53 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TenantLlmService implements LlmService {
 
+    private final ChatModelFactory chatModelFactory;
+    private final StreamingChatModelFactory streamingChatModelFactory;
     private final TenantConfigService tenantConfigService;
-    private final ChatModel chatModel;
 
     @Override
     public ChatResponse chat(ChatRequest request) {
         String appId = resolveAppId(request);
-        List<Message> messages = buildMessages(request);
-        Prompt prompt = new Prompt(messages);
-        var response = chatModel.call(prompt);
-        String content = response.getResult().getOutput().getText();
-        return ChatResponse.of(content, "default");
+        ChatModel chatModel = chatModelFactory.getChatModel(appId);
+        List<ChatMessage> messages = buildMessages(request);
+
+        dev.langchain4j.model.chat.response.ChatResponse response = chatModel.chat(messages);
+        String content = response.aiMessage().text();
+        String modelName = tenantConfigService.getConfigValue(appId, "llm.model").orElse("unknown");
+
+        ChatResponse chatResponse = ChatResponse.of(content, modelName);
+        if (response.tokenUsage() != null) {
+            chatResponse.setPromptTokens(response.tokenUsage().inputTokenCount());
+            chatResponse.setCompletionTokens(response.tokenUsage().outputTokenCount());
+        }
+        return chatResponse;
     }
 
     @Override
     public Flux<String> chatStream(ChatRequest request) {
-        List<Message> messages = buildMessages(request);
-        Prompt prompt = new Prompt(messages);
-        return chatModel.stream(prompt)
-                .map(response -> {
-                    var output = response.getResult().getOutput();
-                    return output.getText();
-                })
-                .filter(text -> text != null && !text.isEmpty());
+        String appId = resolveAppId(request);
+        StreamingChatModel streamingChatModel = streamingChatModelFactory.getStreamingChatModel(appId);
+        List<ChatMessage> messages = buildMessages(request);
+
+        return Flux.create(sink -> streamingChatModel.chat(messages, new StreamingChatResponseHandler() {
+            @Override
+            public void onPartialResponse(String partialResponse) {
+                if (partialResponse != null && !partialResponse.isEmpty()) {
+                    sink.next(partialResponse);
+                }
+            }
+
+            @Override
+            public void onCompleteResponse(dev.langchain4j.model.chat.response.ChatResponse response) {
+                sink.complete();
+            }
+
+            @Override
+            public void onError(Throwable error) {
+                log.error("Streaming chat error for appId={}", appId, error);
+                sink.error(error);
+            }
+        }));
     }
 
     private String resolveAppId(ChatRequest request) {
@@ -63,21 +89,21 @@ public class TenantLlmService implements LlmService {
         return appId;
     }
 
-    private List<Message> buildMessages(ChatRequest request) {
-        List<Message> messages = new ArrayList<>();
+    private List<ChatMessage> buildMessages(ChatRequest request) {
+        List<ChatMessage> messages = new ArrayList<>();
         if (request.getSystemPrompt() != null && !request.getSystemPrompt().isBlank()) {
-            messages.add(new SystemMessage(request.getSystemPrompt()));
+            messages.add(SystemMessage.from(request.getSystemPrompt()));
         }
         if (request.getHistory() != null) {
             for (ChatRequest.ChatMessage msg : request.getHistory()) {
                 switch (msg.getRole().toLowerCase()) {
-                    case "user" -> messages.add(new UserMessage(msg.getContent()));
-                    case "assistant" -> messages.add(new AssistantMessage(msg.getContent()));
+                    case "user" -> messages.add(UserMessage.from(msg.getContent()));
+                    case "assistant" -> messages.add(AiMessage.from(msg.getContent()));
                     default -> log.warn("Unknown message role: {}", msg.getRole());
                 }
             }
         }
-        messages.add(new UserMessage(request.getMessage()));
+        messages.add(UserMessage.from(request.getMessage()));
         return messages;
     }
 }
