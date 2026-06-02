@@ -29,6 +29,10 @@
             <groupId>com.company</groupId>
             <artifactId>ai-llm</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.company</groupId>
+            <artifactId>common-redis</artifactId>
+        </dependency>
 
         <!-- LangChain4j core + OpenAI -->
         <dependency>
