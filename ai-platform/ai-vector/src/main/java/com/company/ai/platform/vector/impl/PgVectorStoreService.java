@@ -88,6 +88,19 @@ public class PgVectorStoreService implements VectorStoreService {
                 queryVector, queryVector, topK);
     }
 
+    @Override
+    public void delete(String appId, List<Long> chunkIds) {
+        if (chunkIds == null || chunkIds.isEmpty()) {
+            return;
+        }
+        String tableName = "vec_" + appId;
+        String placeholders = String.join(",", chunkIds.stream().map(id -> "?").toList());
+        jdbcTemplate.update(
+                "DELETE FROM " + tableName + " WHERE chunk_id IN (" + placeholders + ")",
+                chunkIds.toArray());
+        log.info("Deleted {} chunks from {}", chunkIds.size(), tableName);
+    }
+
     private String arrayToVectorString(float[] arr) {
         StringBuilder sb = new StringBuilder("[");
         for (int i = 0; i < arr.length; i++) {

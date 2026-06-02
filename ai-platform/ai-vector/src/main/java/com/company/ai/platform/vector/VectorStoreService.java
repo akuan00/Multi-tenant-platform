@@ -8,4 +8,5 @@ public interface VectorStoreService {
     void add(String appId, List<VectorDocument> docs);
     List<VectorSearchResult> search(String appId, float[] query, int topK);
     void ensureCollection(String appId, int dimension);
+    void delete(String appId, List<Long> chunkIds);
 }

@@ -59,6 +59,10 @@
         </dependency>
         <dependency>
             <groupId>com.company</groupId>
+            <artifactId>ai-knowledge</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.company</groupId>
             <artifactId>ai-gateway</artifactId>
         </dependency>
         <dependency>

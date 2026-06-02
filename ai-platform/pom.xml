@@ -21,6 +21,7 @@
         <module>ai-agent</module>
         <module>ai-workflow</module>
         <module>ai-prompt</module>
+        <module>ai-knowledge</module>
     </modules>
 
     <dependencies>

@@ -6,11 +6,11 @@
 
     <parent>
         <groupId>com.company</groupId>
-        <artifactId>ai-center</artifactId>
+        <artifactId>ai-platform</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>ai-gateway</artifactId>
+    <artifactId>ai-knowledge</artifactId>
 
     <dependencies>
         <dependency>
@@ -23,23 +23,7 @@
         </dependency>
         <dependency>
             <groupId>com.company</groupId>
-            <artifactId>ai-llm</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.company</groupId>
-            <artifactId>ai-rag</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.company</groupId>
-            <artifactId>ai-agent</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.company</groupId>
-            <artifactId>ai-workflow</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.company</groupId>
-            <artifactId>ai-knowledge</artifactId>
+            <artifactId>ai-embedding</artifactId>
         </dependency>
         <dependency>
             <groupId>com.company</groupId>
@@ -49,14 +33,21 @@
             <groupId>com.company</groupId>
             <artifactId>common-storage</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+
+        <!-- Apache Tika for document parsing -->
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers-standard-package</artifactId>
+            <version>${tika.version}</version>
         </dependency>
     </dependencies>
 </project>

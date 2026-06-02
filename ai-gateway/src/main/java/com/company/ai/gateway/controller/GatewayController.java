@@ -14,12 +14,16 @@ import com.company.ai.platform.rag.model.RagResult;
 import com.company.ai.platform.workflow.WorkflowService;
 import com.company.ai.platform.workflow.model.WorkflowRequest;
 import com.company.ai.platform.workflow.model.WorkflowResult;
+import com.company.ai.platform.knowledge.KnowledgeService;
+import com.company.ai.platform.knowledge.model.DocumentVO;
+import com.company.ai.platform.knowledge.model.IngestResult;
 import com.company.ai.tenant.context.TenantContext;
 import com.company.ai.tenant.entity.TenantConfig;
 import com.company.ai.tenant.service.TenantConfigService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 @RestController
@@ -33,6 +37,7 @@ public class GatewayController {
     private final WorkflowService workflowService;
     private final ChatModelFactory chatModelFactory;
     private final TenantConfigService tenantConfigService;
+    private final KnowledgeService knowledgeService;
 
     @PostMapping("/chat")
     public R<ChatResponse> chat(@RequestBody ChatRequest request) {
@@ -90,5 +95,26 @@ public class GatewayController {
             chatModelFactory.evict(appId);
         }
         return R.ok();
+    }
+
+    @PostMapping("/knowledge/upload")
+    public R<IngestResult> knowledgeUpload(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "title", required = false) String title) {
+        String appId = TenantContext.getAppId();
+        return R.ok(knowledgeService.ingest(appId, file, title));
+    }
+
+    @DeleteMapping("/knowledge/document/{documentId}")
+    public R<Void> deleteKnowledgeDocument(@PathVariable Long documentId) {
+        String appId = TenantContext.getAppId();
+        knowledgeService.deleteDocument(appId, documentId);
+        return R.ok();
+    }
+
+    @GetMapping("/knowledge/documents")
+    public R<java.util.List<DocumentVO>> listKnowledgeDocuments() {
+        String appId = TenantContext.getAppId();
+        return R.ok(knowledgeService.listDocuments(appId));
     }
 }
