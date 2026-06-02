@@ -9,6 +9,7 @@ public class AgentRequest {
     private String appId;
     private String message;
     private String agentName;
+    private String sessionId;
     private Map<String, Object> context;
     private List<String> toolIds;
 }

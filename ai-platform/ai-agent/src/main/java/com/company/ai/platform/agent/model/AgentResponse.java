@@ -6,12 +6,12 @@ import java.util.List;
 @Data
 public class AgentResponse {
     private String content;
-    private List<ToolCall> toolCalls;
-    private Integer totalTokens;
+    private List<ToolExecution> toolExecutions;
+    private String sessionId;
+    private Integer memoryMessageCount;
 
     @Data
-    public static class ToolCall {
-        private String toolId;
+    public static class ToolExecution {
         private String toolName;
         private String arguments;
         private String result;

@@ -5,4 +5,5 @@ import com.company.ai.platform.agent.model.AgentResponse;
 
 public interface AgentService {
     AgentResponse execute(AgentRequest request);
+    void clearMemory(String appId, String sessionId);
 }

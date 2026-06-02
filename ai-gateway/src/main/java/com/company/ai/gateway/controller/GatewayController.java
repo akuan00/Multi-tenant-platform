@@ -53,6 +53,13 @@ public class GatewayController {
         return R.ok(agentService.execute(request));
     }
 
+    @DeleteMapping("/agent/memory/{sessionId}")
+    public R<Void> clearAgentMemory(@PathVariable String sessionId) {
+        String appId = TenantContext.getAppId();
+        agentService.clearMemory(appId, sessionId);
+        return R.ok();
+    }
+
     @PostMapping("/workflow/run")
     public R<WorkflowResult> workflowRun(@RequestBody WorkflowRequest request) {
         request.setAppId(TenantContext.getAppId());
