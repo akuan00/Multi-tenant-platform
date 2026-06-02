@@ -77,7 +77,11 @@ public class PgVectorStoreService implements VectorStoreService {
                     result.setSimilarity(rs.getDouble("similarity"));
                     String metadataStr = rs.getString("metadata");
                     if (metadataStr != null) {
-                        result.setMetadata(objectMapper.readValue(metadataStr, Map.class));
+                        try {
+                            result.setMetadata(objectMapper.readValue(metadataStr, Map.class));
+                        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+                            log.warn("Failed to parse metadata JSON", e);
+                        }
                     }
                     return result;
                 },

@@ -4,7 +4,6 @@ import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.ObjectMetadata;
 import com.company.ai.common.storage.config.OssConfig;
-import com.company.ai.tenant.context.TenantContext;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,8 +40,7 @@ public class OssStorageService {
         }
     }
 
-    public String upload(MultipartFile file, String directory) throws IOException {
-        String appId = TenantContext.getAppId();
+    public String upload(MultipartFile file, String directory, String appId) throws IOException {
         String originalFilename = file.getOriginalFilename();
         String extension = "";
         if (originalFilename != null && originalFilename.contains(".")) {
