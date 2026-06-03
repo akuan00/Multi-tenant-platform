@@ -8,6 +8,7 @@ public class ChatResponse {
     private String model;
     private Integer promptTokens;
     private Integer completionTokens;
+    private Long conversationId;
 
     public static ChatResponse of(String content, String model) {
         ChatResponse response = new ChatResponse();

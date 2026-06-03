@@ -11,6 +11,8 @@ public class ChatRequest {
     private String systemPrompt;
     private List<ChatMessage> history;
     private Map<String, Object> parameters;
+    private Long conversationId;
+    private String userId;
 
     @Data
     public static class ChatMessage {

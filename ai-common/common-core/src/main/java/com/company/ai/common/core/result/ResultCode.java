@@ -16,7 +16,8 @@ public enum ResultCode {
     TENANT_NOT_FOUND(1001, "tenant not found"),
     MODEL_NOT_CONFIGURED(1002, "model not configured for this tenant"),
     KNOWLEDGE_NOT_FOUND(1003, "knowledge base not found"),
-    WORKFLOW_NOT_FOUND(1004, "workflow not found");
+    WORKFLOW_NOT_FOUND(1004, "workflow not found"),
+    CONVERSATION_NOT_FOUND(1005, "conversation not found");
 
     private final int code;
     private final String message;

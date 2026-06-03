@@ -22,6 +22,7 @@
         <module>ai-workflow</module>
         <module>ai-prompt</module>
         <module>ai-knowledge</module>
+        <module>ai-conversation</module>
     </modules>
 
     <dependencies>

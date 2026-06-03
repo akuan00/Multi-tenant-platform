@@ -43,6 +43,10 @@
         </dependency>
         <dependency>
             <groupId>com.company</groupId>
+            <artifactId>ai-conversation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.company</groupId>
             <artifactId>ai-vector</artifactId>
         </dependency>
         <dependency>

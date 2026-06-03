@@ -63,6 +63,10 @@
         </dependency>
         <dependency>
             <groupId>com.company</groupId>
+            <artifactId>ai-conversation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.company</groupId>
             <artifactId>ai-gateway</artifactId>
         </dependency>
         <dependency>
