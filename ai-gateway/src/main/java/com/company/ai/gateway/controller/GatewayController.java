@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @RestController
@@ -127,6 +128,11 @@ public class GatewayController {
     public R<WorkflowResult> workflowRun(@RequestBody WorkflowRequest request) {
         request.setAppId(TenantContext.getAppId());
         return R.ok(workflowService.run(request));
+    }
+
+    @GetMapping("/workflow/list")
+    public R<Set<String>> listWorkflows() {
+        return R.ok(workflowService.listWorkflowIds());
     }
 
     @GetMapping("/tenant/config")
